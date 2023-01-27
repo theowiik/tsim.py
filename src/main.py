@@ -1,15 +1,15 @@
 import pygame
 from controller import Controller
-from model import Train
+from model import World
 from view import View
 import threading
 
 
-def train_thread(train):
+def train_thread(world):
     clock = pygame.time.Clock()
 
     while True:
-        train.move()
+        world.update()
         clock.tick(10)
 
 
@@ -33,12 +33,12 @@ def main():
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("train-sim 2.0")
 
-    train = Train(200, 200)
-    view = View(train, screen)
-    controller = Controller(train, view)
+    world = World()
+    view = View(world, screen)
+    controller = Controller(world, view)
 
     # Start train thread
-    t_thread = threading.Thread(target=train_thread, args=(train,))
+    t_thread = threading.Thread(target=train_thread, args=(world,))
     t_thread.start()
 
     # Draw loop

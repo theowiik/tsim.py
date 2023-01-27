@@ -1,22 +1,23 @@
 import pygame
-from model import Train
+from model import World
 
 train_color = (66, 245, 158)
 
 
 class View:
-    def __init__(self, train: Train, screen):
-        self.train = train
+    def __init__(self, world: World, screen):
+        self.world = world
         self.screen = screen
 
     def draw(self):
-        pygame.draw.rect(
-            self.screen,
-            train_color,
-            pygame.Rect(
-                self.train.x,
-                self.train.y,
-                self.train.cargo_length,
-                20,
-            ),
-        )
+        for train in self.world.trains:
+            pygame.draw.rect(
+                self.screen,
+                train_color,
+                pygame.Rect(
+                    train.x,
+                    train.y,
+                    train.cargo_length,
+                    20,
+                ),
+            )
