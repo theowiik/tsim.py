@@ -6,16 +6,26 @@ import threading
 
 
 def train_thread(train):
-    print('Starting train thread')
-    print('Train thread id:', threading.get_ident())
-
-    wait_time = 16  # milliseconds
-    time_waited = pygame.time.get_ticks()
+    clock = pygame.time.Clock()
 
     while True:
-        if pygame.time.get_ticks() - time_waited > wait_time:
-            train.move()
-            time_waited = pygame.time.get_ticks()
+        train.move()
+        clock.tick(10)
+
+
+def draw_thread(view, controller, screen):
+    clock = pygame.time.Clock()
+
+    while True:
+        controller.handle_events()
+
+        # Draw
+        screen.fill((0, 0, 0))
+        view.draw()
+        pygame.display.update()
+
+        # Limit FPS
+        clock.tick(200)
 
 
 def main():
@@ -32,18 +42,9 @@ def main():
     t_thread.start()
 
     # Draw loop
-    clock = pygame.time.Clock()
-    while True:
-        controller.handle_events()
-
-        # Draw
-        print('Drawing 🖌️')
-        screen.fill((0, 0, 0))
-        view.draw()
-        pygame.display.update()
-
-        # Limit FPS
-        clock.tick(200)
+    d_thread = threading.Thread(
+        target=draw_thread, args=(view, controller, screen, ))
+    d_thread.start()
 
 
 if __name__ == "__main__":
