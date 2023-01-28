@@ -10,7 +10,7 @@ def train_thread(world):
 
     while True:
         world.update()
-        clock.tick(10)
+        clock.tick(1)
 
 
 def draw_thread(view, controller, screen):
@@ -20,7 +20,7 @@ def draw_thread(view, controller, screen):
         controller.handle_events()
 
         # Draw
-        screen.fill((0, 0, 0))
+        screen.fill((43, 42, 41))
         view.draw()
         pygame.display.update()
 

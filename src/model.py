@@ -8,10 +8,9 @@ class CellType(Enum):
 
 
 class Cell:
-    cell_type: CellType = CellType.EMPTY
-
-    def __init__(self, cell_type: CellType):
+    def __init__(self, cell_type: CellType, has_train: bool = False):
         self.cell_type = cell_type
+        self.has_train = has_train
 
 
 class DevUtils:
@@ -34,7 +33,7 @@ class DevUtils:
         return [
             [Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
                 CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
-            [Cell(CellType.EMPTY), Cell(CellType.TRACK), Cell(CellType.TRACK), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
+            [Cell(CellType.EMPTY), Cell(CellType.TRACK, True), Cell(CellType.TRACK), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
                 CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
             [Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.TRACK), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
                 CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
@@ -61,12 +60,36 @@ class World:
     trains: List[Train] = []
     matrix: List[List[Cell]] = DevUtils.create_sample_matrix()
 
+    train_index = (1, 1)
+
     def __init__(self):
         self.trains.append(Train(200, 200, 1.0))
-        self.trains.append(Train(300, 300, 2.0))
+        self.trains.append(Train(300, 300, 7.0))
 
     def update(self):
+        # Dynamic trains
         for train in self.trains:
             train.move()
 
-        DevUtils.print_matrix(self.matrix)
+        # Static trains
+        self.update_matrix()
+
+    def update_matrix(self):
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i == 0 and j == 0:
+                    continue
+
+                # Ignore diagonal
+                if i != 0 and j != 0:
+                    continue
+
+                if self.matrix[self.train_index[0] + i][self.train_index[1] + j].cell_type == CellType.TRACK:
+                    next_index = (self.train_index[0] + i, self.train_index[1] + j)
+
+                    self.matrix[next_index[0]][next_index[1]].has_train = True
+                    self.matrix[self.train_index[0]][self.train_index[1]].has_train = False
+                    self.train_index = next_index
+
+                    print("Train moved to: ", self.train_index)
+                    return
