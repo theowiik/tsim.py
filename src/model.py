@@ -42,6 +42,26 @@ class DevUtils:
                 CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
         ]
 
+    @staticmethod
+    def build_map():
+        # TODO: no error handling
+        f = open("data/map.map", "r")
+
+        matrix = []
+
+        for line in f:
+            row = []
+
+            for char in line:
+                if char == ".":
+                    row.append(Cell(CellType.EMPTY))
+                elif char == "#":
+                    row.append(Cell(CellType.TRACK))
+
+            matrix.append(row)
+
+        return matrix
+
 
 class Direction(Enum):
     UP = 0
@@ -62,7 +82,7 @@ class Train:
 
 
 class World:
-    matrix: List[List[Cell]] = DevUtils.create_sample_matrix()
+    matrix: List[List[Cell]] = DevUtils.build_map()
 
     dir_to_coordinate = {
         Direction.UP: (0, -1),
@@ -133,4 +153,3 @@ class World:
 
                 new_dir = self.coordinate_to_dir[(add_x, add_y)]
                 train.direction = new_dir
-
