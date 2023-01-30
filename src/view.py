@@ -15,16 +15,25 @@ class View:
 
     def draw(self):
         self.draw_matrix()
+        self.draw_trains()
 
-        for train in self.world.trains:
+    def draw_trains(self):
+        for position in self.world.get_train_positions():
+            xoffset = self.cell_margin + position[0] * (
+                self.cell_width + self.cell_margin
+            )
+            yoffset = self.cell_margin + position[1] * (
+                self.cell_width + self.cell_margin
+            )
+
             pygame.draw.rect(
                 self.screen,
                 self.cell_train_color,
                 pygame.Rect(
-                    train.x,
-                    train.y,
-                    train.cargo_length,
-                    20,
+                    xoffset + self.cell_margin,
+                    yoffset + self.cell_margin,
+                    self.cell_width - self.cell_margin * 2,
+                    self.cell_width - self.cell_margin * 2,
                 ),
             )
 
@@ -50,18 +59,6 @@ class View:
                         self.cell_width,
                     ),
                 )
-
-                if cell.has_train:
-                    pygame.draw.rect(
-                        self.screen,
-                        self.cell_train_color,
-                        pygame.Rect(
-                            xoffset + self.cell_margin,
-                            yoffset + self.cell_margin,
-                            self.cell_width - self.cell_margin * 2,
-                            self.cell_width - self.cell_margin * 2,
-                        ),
-                    )
 
                 xoffset += self.cell_width + self.cell_margin
 
