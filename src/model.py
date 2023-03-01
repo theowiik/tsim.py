@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import List
+import pprint
 
 
 class CellType(Enum):
@@ -45,7 +46,7 @@ class DevUtils:
     @staticmethod
     def build_map():
         # TODO: no error handling
-        f = open("data/map.map", "r")
+        f = open("src/data/map.map", "r")
 
         matrix = []
 
@@ -120,36 +121,32 @@ class World:
 
     def tick(self):
         for train, position in self.train_positions.items():
-            dirs = []
-            dirs.append(train.direction)
+            dirs_to_try = [train.direction]
+
             for direction in self.allowed_turns[train.direction]:
-                dirs.append(direction)
+                dirs_to_try.append(direction)
 
-            i = 0
-            for direction in dirs:
-                i += 1
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(dirs_to_try)
+            pp.pprint(train.direction)
+
+            (next_x, next_y) = (None, None)
+            for direction in dirs_to_try:
                 add_x, add_y = self.dir_to_coordinate[direction]
+                new_test_x = position[0] + add_x
+                new_test_y = position[1] + add_y
 
-                new_x = position[0] + add_x
-                new_y = position[1] + add_y
+                # Check if new position is valid
+                if new_test_x < 0 or new_test_x >= len(self.matrix[0]): continue
+                if new_test_y < 0 or new_test_y >= len(self.matrix): continue
 
-                # check if new position is valid
-                if new_x < 0 or new_x >= len(self.matrix[0]):
-                    continue
-                if new_y < 0 or new_y >= len(self.matrix):
-                    continue
+                if self.matrix[new_test_y][new_test_x].cell_type == CellType.TRACK:
+                    (next_x, next_y) = (new_test_x, new_test_y)
 
-                # check if new position is track
-                if self.matrix[new_y][new_x].cell_type != CellType.TRACK:
-                    # count directions
-
-                    if i == len(dirs):
-                        print('booom 💣')
-
-                    continue
-
-                # move train
-                self.train_positions[train] = (new_x, new_y)
-
-                new_dir = self.coordinate_to_dir[(add_x, add_y)]
+            if next_x is not None and next_y is not None:
+                (old_x, old_y) = position
+                self.train_positions[train] = (next_x, next_y)
+                new_dir = self.coordinate_to_dir[(next_x - old_x, next_y - old_y)]
                 train.direction = new_dir
+            else:
+                print("no move possible 💣")
