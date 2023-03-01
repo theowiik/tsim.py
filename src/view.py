@@ -18,17 +18,21 @@ class View:
         self.draw_trains()
 
     def draw_trains(self):
-        for position in self.world.get_train_positions():
+        for train, position in self.world.train_positions.items():
             xoffset = self.cell_margin + position[0] * (
                 self.cell_width + self.cell_margin
             )
+
             yoffset = self.cell_margin + position[1] * (
                 self.cell_width + self.cell_margin
             )
 
+            train_color = self.cell_train_color
+            if train.state == "CRASHED": train_color = (200, 20, 20)
+
             pygame.draw.rect(
                 self.screen,
-                self.cell_train_color,
+                train_color,
                 pygame.Rect(
                     xoffset + self.cell_margin,
                     yoffset + self.cell_margin,

@@ -29,21 +29,6 @@ class DevUtils:
             print()
 
     @staticmethod
-    def create_sample_matrix():
-        return [
-            [Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
-                CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
-            [Cell(CellType.EMPTY), Cell(CellType.TRACK), Cell(CellType.TRACK), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
-                CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
-            [Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.TRACK), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
-                CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
-            [Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
-                CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
-            [Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(
-                CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY), Cell(CellType.EMPTY)],
-        ]
-
-    @staticmethod
     def build_map():
         # TODO: no error handling
         f = open("src/data/map.map", "r")
@@ -73,6 +58,7 @@ class Direction(Enum):
 
 class Train:
     cargo_length: float = 100.0
+    state = "OK"
 
     def __init__(self, movement_speed: float, direction: Direction):
         self.movement_speed = movement_speed
@@ -84,6 +70,8 @@ class Train:
 
 class World:
     matrix: List[List[Cell]] = DevUtils.build_map()
+    train_ok_state = "OK"
+    train_crash_state = "CRASHED"
 
     dir_to_coordinate = {
         Direction.UP: (0, -1),
@@ -107,17 +95,19 @@ class World:
     }
 
     train_positions = {
-        Train(1.0, Direction.RIGHT): (1, 1),
+        Train(1.0, Direction.RIGHT): (2, 1),
+        Train(1.0, Direction.LEFT): (1, 1),
     }
-
-    def __init__(self):
-        pass
-
-    def get_train_positions(self):
-        return self.train_positions.values()
 
     def update(self):
         self.tick()
+
+    def cell_has_train(x, y):
+        for _, position in self.train_positions.items():
+            if position[0] == x and position[1] == y:
+                return True
+
+        return False
 
     def tick(self):
         for train, position in self.train_positions.items():
@@ -137,8 +127,10 @@ class World:
                 new_test_y = position[1] + add_y
 
                 # Check if new position is valid
-                if new_test_x < 0 or new_test_x >= len(self.matrix[0]): continue
-                if new_test_y < 0 or new_test_y >= len(self.matrix): continue
+                if new_test_x < 0 or new_test_x >= len(self.matrix[0]):
+                    continue
+                if new_test_y < 0 or new_test_y >= len(self.matrix):
+                    continue
 
                 if self.matrix[new_test_y][new_test_x].cell_type == CellType.TRACK:
                     (next_x, next_y) = (new_test_x, new_test_y)
@@ -148,5 +140,7 @@ class World:
                 self.train_positions[train] = (next_x, next_y)
                 new_dir = self.coordinate_to_dir[(next_x - old_x, next_y - old_y)]
                 train.direction = new_dir
+
             else:
                 print("no move possible 💣")
+                train.state = self.train_crash_state
