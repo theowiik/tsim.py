@@ -96,18 +96,18 @@ class World:
 
     train_positions = {
         Train(1.0, Direction.RIGHT): (2, 1),
-        Train(1.0, Direction.LEFT): (1, 1),
+        Train(1.0, Direction.LEFT): (8, 1),
     }
 
     def update(self):
         self.tick()
 
-    def cell_has_train(x, y):
-        for _, position in self.train_positions.items():
+    def get_cells_train(self, x, y):
+        for train, position in self.train_positions.items():
             if position[0] == x and position[1] == y:
-                return True
+                return train
 
-        return False
+        return None
 
     def tick(self):
         for train, position in self.train_positions.items():
@@ -144,3 +144,12 @@ class World:
             else:
                 print("no move possible 💣")
                 train.state = self.train_crash_state
+
+        # Check for collisions
+        for train, position in self.train_positions.items():
+            train_on_cell = self.get_cells_train(position[0], position[1])
+
+            if train_on_cell != train:
+                print("collision 💥 with another train")
+                train.state = self.train_crash_state
+                train_on_cell.state = self.train_crash_state
