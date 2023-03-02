@@ -57,22 +57,14 @@ class Direction(Enum):
 
 
 class Train:
-    cargo_length: float = 100.0
+    length: int = 2
     state = "OK"
 
-    def __init__(self, movement_speed: float, direction: Direction):
-        self.movement_speed = movement_speed
+    def __init__(self, direction: Direction):
         self.direction = direction
 
-    def move(self):
-        self.x += self.movement_speed
 
-
-class World:
-    matrix: List[List[Cell]] = DevUtils.build_map()
-    train_ok_state = "OK"
-    train_crash_state = "CRASHED"
-
+class DirectionUtils:
     dir_to_coordinate = {
         Direction.UP: (0, -1),
         Direction.DOWN: (0, 1),
@@ -94,9 +86,16 @@ class World:
         Direction.RIGHT: [Direction.UP, Direction.DOWN],
     }
 
+
+class World:
+    direction_utils = DirectionUtils()
+    matrix: List[List[Cell]] = DevUtils.build_map()
+    train_ok_state = "OK"
+    train_crash_state = "CRASHED"
+
     train_positions = {
-        Train(1.0, Direction.RIGHT): (2, 1),
-        Train(1.0, Direction.LEFT): (8, 1),
+        Train(Direction.RIGHT): (2, 1),
+        Train(Direction.LEFT): (8, 1),
     }
 
     def update(self):
@@ -110,23 +109,22 @@ class World:
         return None
 
     def tick(self):
+        self.move_tick()
+        self.train_collision_tick()
+
+    def move_tick(self):
         for train, position in self.train_positions.items():
             dirs_to_try = [train.direction]
 
-            for direction in self.allowed_turns[train.direction]:
+            for direction in self.direction_utils.allowed_turns[train.direction]:
                 dirs_to_try.append(direction)
-
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(dirs_to_try)
-            pp.pprint(train.direction)
 
             (next_x, next_y) = (None, None)
             for direction in dirs_to_try:
-                add_x, add_y = self.dir_to_coordinate[direction]
+                add_x, add_y = self.direction_utils.dir_to_coordinate[direction]
                 new_test_x = position[0] + add_x
                 new_test_y = position[1] + add_y
 
-                # Check if new position is valid
                 if new_test_x < 0 or new_test_x >= len(self.matrix[0]):
                     continue
                 if new_test_y < 0 or new_test_y >= len(self.matrix):
@@ -138,18 +136,19 @@ class World:
             if next_x is not None and next_y is not None:
                 (old_x, old_y) = position
                 self.train_positions[train] = (next_x, next_y)
-                new_dir = self.coordinate_to_dir[(next_x - old_x, next_y - old_y)]
+                new_dir = self.direction_utils.coordinate_to_dir[(next_x - old_x, next_y - old_y)]
                 train.direction = new_dir
 
             else:
-                print("no move possible 💣")
+                print("💥 no move possible, collision")
                 train.state = self.train_crash_state
 
+    def train_collision_tick(self):
         # Check for collisions
         for train, position in self.train_positions.items():
             train_on_cell = self.get_cells_train(position[0], position[1])
 
             if train_on_cell != train:
-                print("collision 💥 with another train")
+                print("💥 collision with another train")
                 train.state = self.train_crash_state
                 train_on_cell.state = self.train_crash_state

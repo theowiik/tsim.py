@@ -7,7 +7,7 @@ class View:
     cell_margin = 5
     cell_none_color = (136, 75, 75)
     cell_track_color = (136, 136, 75)
-    cell_train_color = (75, 75, 136)
+    cell_train_colors = [(75, 75, 136), (66, 123, 123)]
 
     def __init__(self, world: World, screen):
         self.world = world
@@ -18,6 +18,7 @@ class View:
         self.draw_trains()
 
     def draw_trains(self):
+        i = 0
         for train, position in self.world.train_positions.items():
             xoffset = self.cell_margin + position[0] * (
                 self.cell_width + self.cell_margin
@@ -27,7 +28,7 @@ class View:
                 self.cell_width + self.cell_margin
             )
 
-            train_color = self.cell_train_color
+            train_color = self.cell_train_colors[i % len(self.cell_train_colors)]
             if train.state == "CRASHED": train_color = (200, 20, 20)
 
             pygame.draw.rect(
@@ -40,6 +41,8 @@ class View:
                     self.cell_width - self.cell_margin * 2,
                 ),
             )
+
+            i += 1
 
     def draw_matrix(self):
         yoffset = self.cell_margin
