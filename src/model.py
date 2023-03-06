@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import List
-import pprint
 
 
 class CellType(Enum):
@@ -12,6 +11,33 @@ class Cell:
     def __init__(self, cell_type: CellType):
         self.cell_type = cell_type
 
+class ArrayUtils:
+    @staticmethod
+    def push_first(a, v):
+        """
+        Inserts the value to the first position in
+        the array without increasing the size.
+        "Pushes" the values down, so the last element
+        will dissapear. Destructive method.
+
+        Examples:
+        a = [1, 2, 3]
+        push_first(a, 0)
+        a -> [0, 1, 2]
+        """
+
+        if a == None:
+            raise Exception('Array is None')
+
+        if len(a) == 0:
+            a.append(v)
+
+        i = len(a) - 1
+        while i > 0:
+            a[i] = a[i - 1]
+            i -= 1
+
+        a[0] = v
 
 class DevUtils:
     @staticmethod
@@ -94,59 +120,70 @@ class World:
     train_crash_state = "CRASHED"
 
     train_positions = {
-        Train(Direction.RIGHT): (2, 1),
-        Train(Direction.LEFT): (8, 1),
+        Train(Direction.RIGHT): [(2, 1), (3, 1)],
+        Train(Direction.LEFT): [(8, 1), (9, 1)],
     }
 
     def update(self):
         self.tick()
 
     def get_cells_train(self, x, y):
-        for train, position in self.train_positions.items():
-            if position[0] == x and position[1] == y:
-                return train
+        for train, positions in self.train_positions.items():
+            for position in positions:
+                if position[0] == x and position[1] == y:
+                    return train
 
         return None
 
     def tick(self):
-        self.move_tick()
+        for train, positions in self.train_positions.items():
+            self.move_train_tick(train, positions)
+
         self.train_collision_tick()
 
-    def move_tick(self):
-        for train, position in self.train_positions.items():
-            dirs_to_try = [train.direction]
+    def move_train_tick(self, train, positions):
+        for _ in range(train.length):
+            self.move_train_one_cell(train, positions)
 
-            for direction in self.direction_utils.allowed_turns[train.direction]:
-                dirs_to_try.append(direction)
+    def move_train_one_cell(self, train, positions):
+        head = positions[0]  # Head
 
-            (next_x, next_y) = (None, None)
-            for direction in dirs_to_try:
-                add_x, add_y = self.direction_utils.dir_to_coordinate[direction]
-                new_test_x = position[0] + add_x
-                new_test_y = position[1] + add_y
+        dirs_to_try = [train.direction]
 
-                if new_test_x < 0 or new_test_x >= len(self.matrix[0]):
-                    continue
-                if new_test_y < 0 or new_test_y >= len(self.matrix):
-                    continue
+        for direction in self.direction_utils.allowed_turns[train.direction]:
+            dirs_to_try.append(direction)
 
-                if self.matrix[new_test_y][new_test_x].cell_type == CellType.TRACK:
-                    (next_x, next_y) = (new_test_x, new_test_y)
+        (next_x, next_y) = (None, None)
+        for direction in dirs_to_try:
+            add_x, add_y = self.direction_utils.dir_to_coordinate[direction]
+            new_test_x = head[0] + add_x
+            new_test_y = head[1] + add_y
 
-            if next_x is not None and next_y is not None:
-                (old_x, old_y) = position
-                self.train_positions[train] = (next_x, next_y)
-                new_dir = self.direction_utils.coordinate_to_dir[(next_x - old_x, next_y - old_y)]
-                train.direction = new_dir
+            if new_test_x < 0 or new_test_x >= len(self.matrix[0]):
+                continue
+            if new_test_y < 0 or new_test_y >= len(self.matrix):
+                continue
 
-            else:
-                print("💥 no move possible, collision")
-                train.state = self.train_crash_state
+            if self.matrix[new_test_y][new_test_x].cell_type == CellType.TRACK:
+                (next_x, next_y) = (new_test_x, new_test_y)
+
+        if next_x is not None and next_y is not None:
+            (old_x, old_y) = head
+            ArrayUtils.push_first(self.train_positions[train], (next_x, next_y))
+
+            new_dir = self.direction_utils.coordinate_to_dir[(next_x - old_x, next_y - old_y)]
+            train.direction = new_dir
+        else:
+            print("💥 no move possible, collision")
+            train.state = self.train_crash_state
 
     def train_collision_tick(self):
         # Check for collisions
         for train, position in self.train_positions.items():
             train_on_cell = self.get_cells_train(position[0], position[1])
+
+            if train_on_cell == None:
+                continue
 
             if train_on_cell != train:
                 print("💥 collision with another train")
