@@ -21,9 +21,9 @@ class ArrayUtils:
         will dissapear. Destructive method.
 
         Examples:
-        a = [1, 2, 3]
-        push_first(a, 0)
-        a -> [0, 1, 2]
+        a = [1, 2, 3];
+        push_first(a, -4);
+        print(a) -> [-4, 1, 2];
         """
 
         if a == None:
@@ -83,7 +83,8 @@ class Direction(Enum):
 
 
 class Train:
-    length: int = 2
+    length: int = 5
+    speed: int = 2
     state = "OK"
 
     def __init__(self, direction: Direction):
@@ -120,9 +121,15 @@ class World:
     train_crash_state = "CRASHED"
 
     train_positions = {
-        Train(Direction.RIGHT): [(2, 1), (3, 1)],
-        Train(Direction.LEFT): [(8, 1), (9, 1)],
+        Train(Direction.RIGHT): [(2, 1)],
+        Train(Direction.LEFT): [(8, 1)],
     }
+    
+    # constructor
+    def __init__(self):
+        for train, positions in self.train_positions.items():
+            for _ in range(train.length):
+                positions.append((positions[0][0], positions[0][1]))
 
     def update(self):
         self.tick()
@@ -142,7 +149,7 @@ class World:
         self.train_collision_tick()
 
     def move_train_tick(self, train, positions):
-        for _ in range(train.length):
+        for _ in range(train.speed):
             self.move_train_one_cell(train, positions)
 
     def move_train_one_cell(self, train, positions):
@@ -178,14 +185,14 @@ class World:
             train.state = self.train_crash_state
 
     def train_collision_tick(self):
-        # Check for collisions
-        for train, position in self.train_positions.items():
-            train_on_cell = self.get_cells_train(position[0], position[1])
+        for train, positions in self.train_positions.items():
+            for position in positions:
+                train_on_cell = self.get_cells_train(position[0], position[1])
 
-            if train_on_cell == None:
-                continue
+                if train_on_cell == None:
+                    continue
 
-            if train_on_cell != train:
-                print("💥 collision with another train")
-                train.state = self.train_crash_state
-                train_on_cell.state = self.train_crash_state
+                if train_on_cell != train:
+                    print("💥 collision with another train")
+                    train.state = self.train_crash_state
+                    train_on_cell.state = self.train_crash_state

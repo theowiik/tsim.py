@@ -10,7 +10,7 @@ def train_thread(world):
 
     while True:
         world.update()
-        clock.tick(1)
+        clock.tick(5)
 
 
 def draw_thread(view, controller, screen):
