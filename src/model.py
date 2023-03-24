@@ -83,12 +83,23 @@ class Direction(Enum):
 
 
 class Train:
-    length: int = 5
-    speed: int = 2
     state = "OK"
+    speed: float = 0
 
-    def __init__(self, direction: Direction):
+    def __init__(self, direction: Direction, max_speed: int = 4, length: int = 5, acceleration: int = 0.2):
         self.direction = direction
+        self.max_speed = max_speed
+        self.length = length
+        self.acceleration = acceleration
+
+    def accelerate_tick(self):
+        if self.speed < self.max_speed:
+            self.speed += self.acceleration
+        if self.speed > self.max_speed:
+            self.speed = self.max_speed
+
+    def get_rounded_speed(self):
+        return int(self.speed)
 
 
 class DirectionUtils:
@@ -121,14 +132,13 @@ class World:
     train_crash_state = "CRASHED"
 
     train_positions = {
-        Train(Direction.RIGHT): [(2, 1)],
-        Train(Direction.LEFT): [(8, 1)],
+        Train(Direction.RIGHT): [(1, 2)],
+        Train(Direction.UP): [(7, 10)],
     }
-    
-    # constructor
+
     def __init__(self):
         for train, positions in self.train_positions.items():
-            for _ in range(train.length):
+            for _ in range(train.length - 1):
                 positions.append((positions[0][0], positions[0][1]))
 
     def update(self):
@@ -149,8 +159,10 @@ class World:
         self.train_collision_tick()
 
     def move_train_tick(self, train, positions):
-        for _ in range(train.speed):
+        for _ in range(train.get_rounded_speed()):
             self.move_train_one_cell(train, positions)
+
+        train.accelerate_tick()
 
     def move_train_one_cell(self, train, positions):
         head = positions[0]  # Head
