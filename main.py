@@ -1,7 +1,7 @@
 import pygame
-from controller import Controller
-from model import World
-from view import View
+from src.controller import Controller
+from src.model import World
+from src.view import View
 import threading
 
 

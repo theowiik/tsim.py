@@ -1,5 +1,5 @@
 import pygame
-from model import World
+from src.model import World
 
 
 class Controller:

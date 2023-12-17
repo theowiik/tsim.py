@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import List, Tuple
+from src.core.map_parser import MapParser
 
 
 # === UTILS ===
@@ -47,7 +48,7 @@ class DirectionUtils:
 
 class ArrayUtils:
     @staticmethod
-    def push_first(a, v):
+    def push_first(a: List[any], v: any) -> None:
         """
         Inserts the value to the first position in
         the array without increasing the size.
@@ -60,7 +61,7 @@ class ArrayUtils:
         print(a) -> [-4, 1, 2];
         """
 
-        if a == None:
+        if a is None:
             raise Exception("Array is None")
 
         if len(a) == 0:
@@ -88,26 +89,6 @@ class DevUtils:
 
                 print(char, end=" ")
             print()
-
-    @staticmethod
-    def build_map():
-        # TODO: no error handling
-        f = open("src/data/map.map", "r")
-
-        matrix = []
-
-        for line in f:
-            row = []
-
-            for char in line:
-                if char == ".":
-                    row.append(Cell(CellType.EMPTY))
-                elif char == "#":
-                    row.append(Cell(CellType.TRACK))
-
-            matrix.append(row)
-
-        return matrix
 
 
 # === CORE ===
@@ -141,7 +122,7 @@ class Train:
 
 class World:
     direction_utils = DirectionUtils()
-    matrix: List[List[Cell]] = DevUtils.build_map()
+    matrix: List[List[Cell]] = MapParser.build_map()
     TRAIN_OK_STATE = "OK"
     TRAIN_CRASH_STATE = "CRASHED"
 

@@ -5,7 +5,7 @@
       "name": "Run",
       "type": "python",
       "request": "launch",
-      "program": "src/main.py",
+      "program": "main.py",
       "console": "integratedTerminal",
       "justMyCode": true
     }
