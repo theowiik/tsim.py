@@ -30,7 +30,8 @@ class View:
                 )
 
                 train_color = self.cell_train_colors[i % len(self.cell_train_colors)]
-                if train.state == "CRASHED": train_color = (200, 20, 20)
+                if train.state == "CRASHED":
+                    train_color = (200, 20, 20)
 
                 pygame.draw.rect(
                     self.screen,

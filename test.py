@@ -12,7 +12,7 @@ def push_first(a, v):
     """
 
     if a == None:
-        raise Exception('Array is None')
+        raise Exception("Array is None")
 
     if len(a) == 0:
         a.append(v)
@@ -23,7 +23,6 @@ def push_first(a, v):
         i -= 1
 
     a[0] = v
-
 
 
 a = [1, 2, 3]
@@ -41,4 +40,3 @@ push_first(a, 333)
 
 a = None
 push_first(a, 333)
-

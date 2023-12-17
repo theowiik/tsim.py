@@ -11,6 +11,7 @@ class Cell:
     def __init__(self, cell_type: CellType):
         self.cell_type = cell_type
 
+
 class ArrayUtils:
     @staticmethod
     def push_first(a, v):
@@ -27,7 +28,7 @@ class ArrayUtils:
         """
 
         if a == None:
-            raise Exception('Array is None')
+            raise Exception("Array is None")
 
         if len(a) == 0:
             a.append(v)
@@ -38,6 +39,7 @@ class ArrayUtils:
             i -= 1
 
         a[0] = v
+
 
 class DevUtils:
     @staticmethod
@@ -86,7 +88,13 @@ class Train:
     state = "OK"
     speed: float = 0
 
-    def __init__(self, direction: Direction, max_speed: int = 4, length: int = 5, acceleration: int = 0.2):
+    def __init__(
+        self,
+        direction: Direction,
+        max_speed: int = 4,
+        length: int = 5,
+        acceleration: int = 0.2,
+    ):
         self.direction = direction
         self.max_speed = max_speed
         self.length = length
@@ -190,7 +198,9 @@ class World:
             (old_x, old_y) = head
             ArrayUtils.push_first(self.train_positions[train], (next_x, next_y))
 
-            new_dir = self.direction_utils.coordinate_to_dir[(next_x - old_x, next_y - old_y)]
+            new_dir = self.direction_utils.coordinate_to_dir[
+                (next_x - old_x, next_y - old_y)
+            ]
             train.direction = new_dir
         else:
             print("💥 no move possible, collision")

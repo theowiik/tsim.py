@@ -43,7 +43,13 @@ def main():
 
     # Draw loop
     d_thread = threading.Thread(
-        target=draw_thread, args=(view, controller, screen, ))
+        target=draw_thread,
+        args=(
+            view,
+            controller,
+            screen,
+        ),
+    )
     d_thread.start()
 
 
