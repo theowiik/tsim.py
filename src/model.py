@@ -131,8 +131,6 @@ class DirectionUtils:
         Direction.LEFT: [Direction.UP, Direction.DOWN],
         Direction.RIGHT: [Direction.UP, Direction.DOWN],
     }
-
-
 class World:
     direction_utils = DirectionUtils()
     matrix: List[List[Cell]] = DevUtils.build_map()
@@ -196,7 +194,8 @@ class World:
 
         if next_x is not None and next_y is not None:
             (old_x, old_y) = head
-            ArrayUtils.push_first(self.train_positions[train], (next_x, next_y))
+            ArrayUtils.push_first(
+                self.train_positions[train], (next_x, next_y))
 
             new_dir = self.direction_utils.coordinate_to_dir[
                 (next_x - old_x, next_y - old_y)
