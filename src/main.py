@@ -5,30 +5,24 @@ from view import View
 import threading
 
 
-def train_thread(world):
+def _model_thread(world: World) -> None:
     clock = pygame.time.Clock()
 
     while True:
-        world.update()
+        world.tick()
         clock.tick(5)
 
 
-def draw_thread(view, controller, screen):
+# TODO: move to view
+def _draw_thread(view: View) -> None:
     clock = pygame.time.Clock()
 
     while True:
-        controller.handle_events()
-
-        # Draw
-        screen.fill((43, 42, 41))
         view.draw()
-        pygame.display.update()
-
-        # Limit FPS
         clock.tick(200)
 
 
-def main():
+def main() -> None:
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("train-sim 2.0")
@@ -38,19 +32,15 @@ def main():
     controller = Controller(world, view)
 
     # Start train thread
-    t_thread = threading.Thread(target=train_thread, args=(world,))
-    t_thread.start()
+    m_thread = threading.Thread(target=_model_thread, args=(world,))
+    m_thread.start()
 
     # Draw loop
-    d_thread = threading.Thread(
-        target=draw_thread,
-        args=(
-            view,
-            controller,
-            screen,
-        ),
-    )
+    d_thread = threading.Thread(target=_draw_thread, args=(view,))
     d_thread.start()
+
+    # while True:
+    #     controller.handle_events()
 
 
 if __name__ == "__main__":

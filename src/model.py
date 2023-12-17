@@ -1,5 +1,8 @@
 from enum import Enum
-from typing import List
+from typing import List, Tuple
+
+
+# === UTILS ===
 
 
 class CellType(Enum):
@@ -10,6 +13,36 @@ class CellType(Enum):
 class Cell:
     def __init__(self, cell_type: CellType):
         self.cell_type = cell_type
+
+
+class Direction(Enum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+
+
+class DirectionUtils:
+    dir_to_coordinate = {
+        Direction.UP: (0, -1),
+        Direction.DOWN: (0, 1),
+        Direction.LEFT: (-1, 0),
+        Direction.RIGHT: (1, 0),
+    }
+
+    coordinate_to_dir = {
+        (0, -1): Direction.UP,
+        (0, 1): Direction.DOWN,
+        (-1, 0): Direction.LEFT,
+        (1, 0): Direction.RIGHT,
+    }
+
+    allowed_turns = {
+        Direction.UP: [Direction.LEFT, Direction.RIGHT],
+        Direction.DOWN: [Direction.LEFT, Direction.RIGHT],
+        Direction.LEFT: [Direction.UP, Direction.DOWN],
+        Direction.RIGHT: [Direction.UP, Direction.DOWN],
+    }
 
 
 class ArrayUtils:
@@ -77,11 +110,7 @@ class DevUtils:
         return matrix
 
 
-class Direction(Enum):
-    UP = 0
-    DOWN = 1
-    LEFT = 2
-    RIGHT = 3
+# === CORE ===
 
 
 class Train:
@@ -110,35 +139,13 @@ class Train:
         return int(self.speed)
 
 
-class DirectionUtils:
-    dir_to_coordinate = {
-        Direction.UP: (0, -1),
-        Direction.DOWN: (0, 1),
-        Direction.LEFT: (-1, 0),
-        Direction.RIGHT: (1, 0),
-    }
-
-    coordinate_to_dir = {
-        (0, -1): Direction.UP,
-        (0, 1): Direction.DOWN,
-        (-1, 0): Direction.LEFT,
-        (1, 0): Direction.RIGHT,
-    }
-
-    allowed_turns = {
-        Direction.UP: [Direction.LEFT, Direction.RIGHT],
-        Direction.DOWN: [Direction.LEFT, Direction.RIGHT],
-        Direction.LEFT: [Direction.UP, Direction.DOWN],
-        Direction.RIGHT: [Direction.UP, Direction.DOWN],
-    }
-
-
 class World:
     direction_utils = DirectionUtils()
     matrix: List[List[Cell]] = DevUtils.build_map()
-    train_ok_state = "OK"
-    train_crash_state = "CRASHED"
+    TRAIN_OK_STATE = "OK"
+    TRAIN_CRASH_STATE = "CRASHED"
 
+    # TODO: Set from file
     train_positions = {
         Train(Direction.RIGHT): [(1, 2)],
         Train(Direction.UP): [(7, 10)],
@@ -149,10 +156,16 @@ class World:
             for _ in range(train.length - 1):
                 positions.append((positions[0][0], positions[0][1]))
 
-    def update(self):
-        self.tick()
+    def tick(self):
+        """
+        Main tick function
+        """
+        for train, positions in self.train_positions.items():
+            self._move_train_tick(train, positions)
 
-    def get_cells_train(self, x, y):
+        self._train_collision_tick()
+
+    def _get_cells_train(self, x, y):
         for train, positions in self.train_positions.items():
             for position in positions:
                 if position[0] == x and position[1] == y:
@@ -160,20 +173,28 @@ class World:
 
         return None
 
-    def tick(self):
-        for train, positions in self.train_positions.items():
-            self.move_train_tick(train, positions)
-
-        self.train_collision_tick()
-
-    def move_train_tick(self, train, positions):
+    def _move_train_tick(self, train, positions):
         for _ in range(train.get_rounded_speed()):
-            self.move_train_one_cell(train, positions)
+            self._move_train_one_cell(train, positions)
 
         train.accelerate_tick()
 
-    def move_train_one_cell(self, train, positions):
-        head = positions[0]  # Head
+    def _move_train_one_cell(
+        self, train: Train, positions: List[Tuple[int, int]]
+    ) -> None:
+        """
+        Moves the train one cell in the direction specified by the train's current direction.
+        If a valid move is found, updates the train's position and direction accordingly.
+        If no valid move is found, sets the train's state to TRAIN_CRASH_STATE.
+
+        Args:
+            train (Train): The train object to move.
+            positions (List[Tuple[int, int]]): The current positions of all trains.
+
+        Returns:
+            None
+        """
+        head = positions[0]
 
         dirs_to_try = [train.direction]
 
@@ -203,18 +224,30 @@ class World:
             ]
             train.direction = new_dir
         else:
-            print("💥 no move possible, collision")
-            train.state = self.train_crash_state
+            # print("💥 no move possible, collision")
+            train.state = self.TRAIN_CRASH_STATE
 
-    def train_collision_tick(self):
+    def _train_collision_tick(self):
+        """
+        Checks for collisions between trains and updates their states accordingly.
+
+        This method iterates over each train and its positions, and checks if there is
+        another train occupying the same position. If a collision is detected, both
+        trains are set to the `TRAIN_CRASH_STATE`.
+
+        Note: This method assumes that the train positions have already been updated.
+
+        Returns:
+            None
+        """
         for train, positions in self.train_positions.items():
             for position in positions:
-                train_on_cell = self.get_cells_train(position[0], position[1])
+                train_on_cell = self._get_cells_train(position[0], position[1])
 
                 if train_on_cell == None:
                     continue
 
                 if train_on_cell != train:
-                    print("💥 collision with another train")
-                    train.state = self.train_crash_state
-                    train_on_cell.state = self.train_crash_state
+                    # print("💥 collision with another train")
+                    train.state = self.TRAIN_CRASH_STATE
+                    train_on_cell.state = self.TRAIN_CRASH_STATE

@@ -1,35 +1,42 @@
 import pygame
+from pygame import Surface
 from model import CellType, World
 
 
 class View:
-    cell_width = 40
-    cell_margin = 5
-    cell_none_color = (136, 75, 75)
-    cell_track_color = (136, 136, 75)
-    cell_train_colors = [(75, 75, 136), (66, 123, 123)]
+    CELl_WIDTH = 40
+    CELL_MARGIN = 5
+    CELL_NONE_COLOR = (136, 75, 75)
+    CELL_TRACK_COLOR = (136, 136, 75)
+    CELL_TRAIN_COLOR = [(75, 75, 136), (66, 123, 123)]
+    CLEAR_COLOR = (43, 42, 41)
 
-    def __init__(self, world: World, screen):
+    def __init__(self, world: World, screen: Surface):
         self.world = world
         self.screen = screen
 
-    def draw(self):
-        self.draw_matrix()
-        self.draw_trains()
+    def draw(self) -> None:
+        """
+        Main draw function
+        """
+        self.screen.fill(self.CLEAR_COLOR)
+        self._draw_matrix()
+        self._draw_trains()
+        pygame.display.update()
 
-    def draw_trains(self):
+    def _draw_trains(self) -> None:
         i = 0
         for train, positions in self.world.train_positions.items():
             for position in positions:
-                xoffset = self.cell_margin + position[0] * (
-                    self.cell_width + self.cell_margin
+                xoffset = self.CELL_MARGIN + position[0] * (
+                    self.CELl_WIDTH + self.CELL_MARGIN
                 )
 
-                yoffset = self.cell_margin + position[1] * (
-                    self.cell_width + self.cell_margin
+                yoffset = self.CELL_MARGIN + position[1] * (
+                    self.CELl_WIDTH + self.CELL_MARGIN
                 )
 
-                train_color = self.cell_train_colors[i % len(self.cell_train_colors)]
+                train_color = self.CELL_TRAIN_COLOR[i % len(self.CELL_TRAIN_COLOR)]
                 if train.state == "CRASHED":
                     train_color = (200, 20, 20)
 
@@ -37,26 +44,26 @@ class View:
                     self.screen,
                     train_color,
                     pygame.Rect(
-                        xoffset + self.cell_margin,
-                        yoffset + self.cell_margin,
-                        self.cell_width - self.cell_margin * 2,
-                        self.cell_width - self.cell_margin * 2,
+                        xoffset + self.CELL_MARGIN,
+                        yoffset + self.CELL_MARGIN,
+                        self.CELl_WIDTH - self.CELL_MARGIN * 2,
+                        self.CELl_WIDTH - self.CELL_MARGIN * 2,
                     ),
                 )
 
             i += 1
 
-    def draw_matrix(self):
-        yoffset = self.cell_margin
+    def _draw_matrix(self) -> None:
+        yoffset = self.CELL_MARGIN
 
         for row in self.world.matrix:
-            xoffset = self.cell_margin
+            xoffset = self.CELL_MARGIN
 
             for cell in row:
-                color = self.cell_none_color
+                color = self.CELL_NONE_COLOR
 
                 if cell.cell_type == CellType.TRACK:
-                    color = self.cell_track_color
+                    color = self.CELL_TRACK_COLOR
 
                 pygame.draw.rect(
                     self.screen,
@@ -64,11 +71,11 @@ class View:
                     pygame.Rect(
                         xoffset,
                         yoffset,
-                        self.cell_width,
-                        self.cell_width,
+                        self.CELl_WIDTH,
+                        self.CELl_WIDTH,
                     ),
                 )
 
-                xoffset += self.cell_width + self.cell_margin
+                xoffset += self.CELl_WIDTH + self.CELL_MARGIN
 
-            yoffset += self.cell_width + self.cell_margin
+            yoffset += self.CELl_WIDTH + self.CELL_MARGIN
