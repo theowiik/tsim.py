@@ -1,6 +1,8 @@
 import pygame
 from pygame import Surface
-from model import CellType, World
+from core.data import CellType
+
+from model import World
 
 
 class View:

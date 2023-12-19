@@ -1,4 +1,4 @@
-from src.model import Cell, CellType
+from core.data import Cell, CellType
 
 
 class MapParser:
