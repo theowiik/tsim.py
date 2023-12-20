@@ -91,7 +91,7 @@ class World:
             train.direction = new_dir
         else:
             # print("💥 no move possible, collision")
-            train._state = self._TRAIN_CRASH_STATE
+            train.state = self._TRAIN_CRASH_STATE
 
     def _check_collisions(self):
         """
@@ -115,5 +115,5 @@ class World:
 
                 if train_on_cell != train:
                     # print("💥 collision with another train")
-                    train._state = self._TRAIN_CRASH_STATE
-                    train_on_cell._state = self._TRAIN_CRASH_STATE
+                    train.state = self._TRAIN_CRASH_STATE
+                    train_on_cell.state = self._TRAIN_CRASH_STATE

@@ -44,7 +44,7 @@ class DirectionUtils:
 
 class Train:
     # TODO: move to model
-    _state: str = "OK"
+    state: str = "OK"
     _speed: float = 0
     is_accelerating: bool = False
     _deacceleration: float = 0.1
