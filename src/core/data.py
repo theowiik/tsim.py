@@ -43,26 +43,29 @@ class DirectionUtils:
 
 
 class Train:
-    _state = "OK"
+    # TODO: move to model
+    _state: str = "OK"
     _speed: float = 0
+    is_accelerating: bool = False
+    _deacceleration: float = 0.1
+    _acceleration: float = 0.2
+    _max_speed: float = 4
+    _length: float = 5
 
     def __init__(
         self,
         direction: Direction,
-        max_speed: int = 4,
-        length: int = 5,
-        acceleration: int = 0.2,
     ):
-        self.direction = direction
-        self._max_speed = max_speed
-        self._length = length
-        self._acceleration = acceleration
+        self.direction: Direction = direction
 
     def accelerate_tick(self):
-        if self._speed < self._max_speed:
+        if self.is_accelerating:
             self._speed += self._acceleration
-        if self._speed > self._max_speed:
-            self._speed = self._max_speed
+        else:
+            self._speed -= self._deacceleration
+
+        # Clamp within [0, _max_speed]
+        self._speed = max(min(self._speed, self._max_speed), 0)
 
     def get_rounded_speed(self):
         return int(self._speed)

@@ -8,6 +8,7 @@ class World:
     _matrix: List[List[Cell]] = MapParser.build_map()
     _TRAIN_OK_STATE = "OK"
     _TRAIN_CRASH_STATE = "CRASHED"
+    is_accelerating = False
 
     train_positions: dict[Train, any] = {
         Train(Direction.RIGHT): [(1, 2)],
@@ -26,7 +27,7 @@ class World:
         for train, positions in self.train_positions.items():
             self._move_train_tick(train, positions)
 
-        self._train_collision_tick()
+        self._check_collisions()
 
     def _get_cells_train(self, x, y):
         for train, positions in self.train_positions.items():
@@ -36,10 +37,12 @@ class World:
 
         return None
 
-    def _move_train_tick(self, train, positions):
+    def _move_train_tick(self, train: Train, positions: List[Tuple[int, int]]):
         for _ in range(train.get_rounded_speed()):
             self._move_train_one_cell(train, positions)
 
+        # TOOD: bad
+        train.is_accelerating = self.is_accelerating
         train.accelerate_tick()
 
     def _move_train_one_cell(
@@ -90,7 +93,7 @@ class World:
             # print("💥 no move possible, collision")
             train._state = self._TRAIN_CRASH_STATE
 
-    def _train_collision_tick(self):
+    def _check_collisions(self):
         """
         Checks for collisions between trains and updates their states accordingly.
 

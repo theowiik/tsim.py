@@ -39,8 +39,8 @@ def main() -> None:
     d_thread = threading.Thread(target=_draw_thread, args=(view,))
     d_thread.start()
 
-    # while True:
-    #     controller.handle_events()
+    while True:
+        controller.handle_events()
 
 
 if __name__ == "__main__":

@@ -8,7 +8,6 @@ class Controller:
         self.view = view
 
     def handle_events(self):
-        print("handling events")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -16,4 +15,4 @@ class Controller:
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    print("Space key pressed")
+                    self.world.is_accelerating = not self.world.is_accelerating
