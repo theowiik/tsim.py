@@ -42,6 +42,32 @@ class DirectionUtils:
     }
 
 
+class Train:
+    _state = "OK"
+    _speed: float = 0
+
+    def __init__(
+        self,
+        direction: Direction,
+        max_speed: int = 4,
+        length: int = 5,
+        acceleration: int = 0.2,
+    ):
+        self.direction = direction
+        self._max_speed = max_speed
+        self._length = length
+        self._acceleration = acceleration
+
+    def accelerate_tick(self):
+        if self._speed < self._max_speed:
+            self._speed += self._acceleration
+        if self._speed > self._max_speed:
+            self._speed = self._max_speed
+
+    def get_rounded_speed(self):
+        return int(self._speed)
+
+
 class ArrayUtils:
     @staticmethod
     def push_first(a: List[any], v: any) -> None:

@@ -1,7 +1,6 @@
 import pygame
 from pygame import Surface
-from core.data import CellType
-
+from core.data import CellType, Direction
 from model import World
 
 
@@ -12,6 +11,7 @@ class View:
     CELL_TRACK_COLOR = (136, 136, 75)
     CELL_TRAIN_COLOR = [(75, 75, 136), (66, 123, 123)]
     CLEAR_COLOR = (43, 42, 41)
+    CELL_TRAIN_CRASH_COLOR = (200, 20, 20)
 
     def __init__(self, world: World, screen: Surface):
         self.world = world
@@ -29,7 +29,7 @@ class View:
     def _draw_trains(self) -> None:
         i = 0
         for train, positions in self.world.train_positions.items():
-            for position in positions:
+            for train_cell_index, position in enumerate(positions):
                 xoffset = self.CELL_MARGIN + position[0] * (
                     self.CELL_WIDTH + self.CELL_MARGIN
                 )
@@ -39,8 +39,8 @@ class View:
                 )
 
                 train_color = self.CELL_TRAIN_COLOR[i % len(self.CELL_TRAIN_COLOR)]
-                if train.state == "CRASHED":
-                    train_color = (200, 20, 20)
+                if train._state == "CRASHED":
+                    train_color = self.CELL_TRAIN_CRASH_COLOR
 
                 pygame.draw.rect(
                     self.screen,
@@ -53,12 +53,33 @@ class View:
                     ),
                 )
 
+                # Draw direction of train
+                if train_cell_index == 0:
+                    direction: str = self._get_direction_symbol(train.direction)
+                    font = pygame.font.Font(None, 36)
+                    text = font.render(direction, True, (0, 0, 0))
+                    self.screen.blit(
+                        text, (xoffset + self.CELL_MARGIN, yoffset + self.CELL_MARGIN)
+                    )
+
             i += 1
+
+    def _get_direction_symbol(self, direction: Direction):
+        if direction == Direction.UP:
+            return "^"
+        elif direction == Direction.DOWN:
+            return "v"
+        elif direction == Direction.LEFT:
+            return "<"
+        elif direction == Direction.RIGHT:
+            return ">"
+
+        return "?"
 
     def _draw_matrix(self) -> None:
         yoffset = self.CELL_MARGIN
 
-        for row in self.world.matrix:
+        for row in self.world._matrix:
             xoffset = self.CELL_MARGIN
 
             for cell in row:
