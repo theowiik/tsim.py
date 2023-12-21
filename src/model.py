@@ -1,6 +1,34 @@
 from typing import List, Tuple
-from core.data import ArrayUtils, Cell, CellType, Direction, DirectionUtils, Train
+from core.data import ArrayUtils, Cell, CellType, Direction, DirectionUtils
 from core.map_parser import MapParser
+
+
+class Train:
+    state: str = "OK"
+    _speed: float = 0
+    is_accelerating: bool = False
+    _deacceleration: float = 0.1
+    _acceleration: float = 0.2
+    _max_speed: float = 400
+    _length: float = 5
+
+    def __init__(
+        self,
+        direction: Direction,
+    ):
+        self.direction: Direction = direction
+
+    def accelerate_tick(self):
+        if self.is_accelerating:
+            self._speed += self._acceleration
+        else:
+            self._speed -= self._deacceleration
+
+        # Clamp within [0, _max_speed]
+        self._speed = max(min(self._speed, self._max_speed), 0)
+
+    def get_rounded_speed(self):
+        return int(self._speed)
 
 
 class World:
@@ -10,10 +38,7 @@ class World:
     _TRAIN_CRASH_STATE = "CRASHED"
     is_accelerating = False
 
-    train_positions: dict[Train, any] = {
-        Train(Direction.RIGHT): [(1, 2)],
-        Train(Direction.UP): [(7, 10)],
-    }
+    train_positions: dict[Train, any] = {Train(Direction.RIGHT): [(1, 2)]}
 
     def __init__(self):
         for train, positions in self.train_positions.items():
@@ -80,6 +105,7 @@ class World:
 
             if self._matrix[new_test_y][new_test_x].cell_type == CellType.TRACK:
                 (next_x, next_y) = (new_test_x, new_test_y)
+                break
 
         if next_x is not None and next_y is not None:
             (old_x, old_y) = head

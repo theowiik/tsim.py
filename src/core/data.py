@@ -3,8 +3,12 @@ from typing import List
 
 
 class CellType(Enum):
-    EMPTY = 0
-    TRACK = 1
+    EMPTY = "."
+    TRACK = "#"
+    SWITCH_LEFT = "<"
+    SWITCH_RIGHT = ">"
+    SWITCH_UP = "^"
+    SWITCH_DOWN = "v"
 
 
 class Cell:
@@ -20,55 +24,26 @@ class Direction(Enum):
 
 
 class DirectionUtils:
-    dir_to_coordinate = {
+    dir_to_coordinate: dict[Direction, tuple[int, int]] = {
         Direction.UP: (0, -1),
         Direction.DOWN: (0, 1),
         Direction.LEFT: (-1, 0),
         Direction.RIGHT: (1, 0),
     }
 
-    coordinate_to_dir = {
+    coordinate_to_dir: dict[tuple[int, int], Direction] = {
         (0, -1): Direction.UP,
         (0, 1): Direction.DOWN,
         (-1, 0): Direction.LEFT,
         (1, 0): Direction.RIGHT,
     }
 
-    allowed_turns = {
+    allowed_turns: dict[Direction, List[Direction]] = {
         Direction.UP: [Direction.LEFT, Direction.RIGHT],
         Direction.DOWN: [Direction.LEFT, Direction.RIGHT],
         Direction.LEFT: [Direction.UP, Direction.DOWN],
         Direction.RIGHT: [Direction.UP, Direction.DOWN],
     }
-
-
-class Train:
-    # TODO: move to model
-    state: str = "OK"
-    _speed: float = 0
-    is_accelerating: bool = False
-    _deacceleration: float = 0.1
-    _acceleration: float = 0.2
-    _max_speed: float = 4
-    _length: float = 5
-
-    def __init__(
-        self,
-        direction: Direction,
-    ):
-        self.direction: Direction = direction
-
-    def accelerate_tick(self):
-        if self.is_accelerating:
-            self._speed += self._acceleration
-        else:
-            self._speed -= self._deacceleration
-
-        # Clamp within [0, _max_speed]
-        self._speed = max(min(self._speed, self._max_speed), 0)
-
-    def get_rounded_speed(self):
-        return int(self._speed)
 
 
 class ArrayUtils:
