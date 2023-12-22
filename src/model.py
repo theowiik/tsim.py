@@ -38,7 +38,7 @@ class World:
     _TRAIN_CRASH_STATE = "CRASHED"
     is_accelerating = False
 
-    train_positions: dict[Train, any] = {Train(Direction.RIGHT): [(1, 2)]}
+    train_positions: dict[Train, any] = {Train(Direction.LEFT): [(24, 1)]}
 
     def __init__(self):
         for train, positions in self.train_positions.items():

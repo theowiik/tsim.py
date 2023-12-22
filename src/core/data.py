@@ -7,8 +7,6 @@ class CellType(Enum):
     TRACK = "#"
     SWITCH_LEFT = "<"
     SWITCH_RIGHT = ">"
-    SWITCH_UP = "^"
-    SWITCH_DOWN = "v"
 
 
 class Cell:
