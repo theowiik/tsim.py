@@ -86,11 +86,14 @@ class World:
             None
         """
         head = positions[0]
+        current_cell: Cell = self._matrix[head[1]][head[0]]
 
-        dirs_to_try = [train.direction]
+        dirs_to_try: list[Direction] = [train.direction]
 
         for direction in self._direction_utils.allowed_turns[train.direction]:
-            dirs_to_try.append(direction)
+            # Ensure it's a valid direction
+            if direction in current_cell.allowed_turns:
+                dirs_to_try.append(direction)
 
         (next_x, next_y) = (None, None)
         for direction in dirs_to_try:
@@ -103,7 +106,11 @@ class World:
             if new_test_y < 0 or new_test_y >= len(self._matrix):
                 continue
 
-            if self._matrix[new_test_y][new_test_x].cell_type == CellType.TRACK:
+            if self._matrix[new_test_y][new_test_x].cell_type in [
+                CellType.TRACK,
+                CellType.SWITCH_LEFT,
+                CellType.SWITCH_RIGHT,
+            ]:
                 (next_x, next_y) = (new_test_x, new_test_y)
                 break
 

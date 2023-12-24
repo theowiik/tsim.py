@@ -1,6 +1,6 @@
 import pygame
 from pygame import Surface
-from core.data import CellType, Direction
+from core.data import CellType, Direction, SwitchState
 from model import World
 
 
@@ -12,6 +12,11 @@ class View:
     _CELL_TRAIN_COLORS = [(75, 75, 136), (66, 123, 123)]
     _CLEAR_COLOR = (43, 42, 41)
     _CELL_TRAIN_CRASH_COLOR = (200, 20, 20)
+
+    _SWITCH_LEFT_UP = "U"  # ┘
+    _SWITCH_LEFT_DOWN = "D"  # ┐
+    _SWITCH_RIGHT_UP = "U"  # └
+    _SWITCH_RIGHT_DOWN = "D"  # ┌
 
     def __init__(self, world: World, screen: Surface):
         self._world = world
@@ -117,9 +122,20 @@ class View:
                 )
 
                 if cell.cell_type == CellType.SWITCH_LEFT:
-                    self._render_text("<", xoffset, yoffset)
+                    if cell.switch_state == SwitchState.UP:
+                        self._render_text(self._SWITCH_LEFT_UP, xoffset, yoffset)
+                    elif cell.switch_state == SwitchState.DOWN:
+                        self._render_text(self._SWITCH_LEFT_DOWN, xoffset, yoffset)
+                    else:
+                        self._render_text("!!", xoffset, yoffset)
+
                 elif cell.cell_type == CellType.SWITCH_RIGHT:
-                    self._render_text(">", xoffset, yoffset)
+                    if cell.switch_state == SwitchState.UP:
+                        self._render_text(self._SWITCH_RIGHT_UP, xoffset, yoffset)
+                    elif cell.switch_state == SwitchState.DOWN:
+                        self._render_text(self._SWITCH_RIGHT_DOWN, xoffset, yoffset)
+                    else:
+                        self._render_text("!!", xoffset, yoffset)
 
                 xoffset += self._CELL_WIDTH + self._CELL_MARGIN
 

@@ -1,4 +1,4 @@
-from core.data import Cell, CellType
+from core.data import Cell, CellType, SwitchState
 
 
 class MapParser:
@@ -20,7 +20,11 @@ class MapParser:
                 cell_type: CellType = MapParser.parse_cell_type(char)
                 if cell_type is None:
                     raise ValueError("Cell cannot be None")
-                row.append(Cell(cell_type))
+                cell = Cell(cell_type)
+                row.append(cell)
+
+                if cell_type in [CellType.SWITCH_LEFT, CellType.SWITCH_RIGHT]:
+                    cell.set_switch_state(SwitchState.UP)
 
             matrix.append(row)
 
