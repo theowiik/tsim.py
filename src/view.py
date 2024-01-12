@@ -5,13 +5,13 @@ from model import Train, TrainStates, World
 
 
 class View:
-    _CELL_WIDTH = 20
-    _CELL_MARGIN = 2
-    _CELL_NONE_COLOR = (136, 75, 75)
-    _CELL_TRACK_COLOR = (136, 136, 75)
-    _CELL_TRAIN_COLORS = [(75, 75, 136), (66, 123, 123)]
-    _CELL_TRAIN_CRASH_COLOR = (200, 20, 20)
-    _CLEAR_COLOR = (43, 42, 41)
+    _CELL_WIDTH: int = 20
+    _CELL_MARGIN: int = 2
+    _CELL_NONE_COLOR: tuple[int, int, int] = (136, 75, 75)
+    _CELL_TRACK_COLOR: tuple[int, int, int] = (136, 136, 75)
+    _CELL_TRAIN_COLORS: list[tuple[int, int, int]] = [(75, 75, 136), (66, 123, 123)]
+    _CELL_TRAIN_CRASH_COLOR: tuple[int, int, int] = (200, 20, 20)
+    _CLEAR_COLOR: tuple[int, int, int] = (43, 42, 41)
 
     def __init__(self, world: World, screen: Surface):
         self._world = world
@@ -30,7 +30,7 @@ class View:
         text = font.render(text, True, (0, 0, 0))
         self._screen.blit(text, (x, y))
 
-    def _get_direction_symbol(self, direction: Direction):
+    def _get_direction_symbol(self, direction: Direction) -> str:
         if direction == Direction.UP:
             return "^"
         elif direction == Direction.DOWN:
