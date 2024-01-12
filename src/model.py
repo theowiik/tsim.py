@@ -1,12 +1,19 @@
+from enum import Enum
 from typing import List, Tuple
-from core.data import ArrayUtils, Cell, CellType, Direction, DirectionUtils
+from core.data import Cell, CellType, Direction, DirectionUtils
 from core.map_parser import MapParser
+from core.util import ArrayUtils
+
+
+class TrainStates(Enum):
+    OK = "OK"
+    CRASHED = "CRASHED"
 
 
 class Train:
-    state: str = "OK"
-    _speed: float = 0
+    state: TrainStates = TrainStates.OK
     is_accelerating: bool = False
+    _speed: float = 0
     _deacceleration: float = 0.1
     _acceleration: float = 0.2
     _max_speed: float = 400
@@ -34,11 +41,8 @@ class Train:
 class World:
     _direction_utils = DirectionUtils()
     _matrix: List[List[Cell]] = MapParser.build_map()
-    _TRAIN_OK_STATE = "OK"
-    _TRAIN_CRASH_STATE = "CRASHED"
     is_accelerating = False
-
-    train_positions: dict[Train, any] = {Train(Direction.LEFT): [(24, 1)]}
+    train_positions: dict[Train, list[Tuple]] = {Train(Direction.LEFT): [(24, 1)]}
 
     def __init__(self):
         for train, positions in self.train_positions.items():
@@ -54,7 +58,7 @@ class World:
 
         self._check_collisions()
 
-    def _get_cells_train(self, x, y):
+    def get_cells_train(self, x, y) -> Train | None:
         for train, positions in self.train_positions.items():
             for position in positions:
                 if position[0] == x and position[1] == y:
@@ -92,7 +96,7 @@ class World:
 
         for direction in self._direction_utils.allowed_turns[train.direction]:
             # Ensure it's a valid direction
-            if direction in current_cell.allowed_turns:
+            if direction in current_cell._allowed_turns:
                 dirs_to_try.append(direction)
 
         (next_x, next_y) = (None, None)
@@ -124,7 +128,7 @@ class World:
             train.direction = new_dir
         else:
             # print("💥 no move possible, collision")
-            train.state = self._TRAIN_CRASH_STATE
+            train.state = TrainStates.CRASHED
 
     def _check_collisions(self):
         """
@@ -141,9 +145,9 @@ class World:
         """
         for train, positions in self.train_positions.items():
             for position in positions:
-                train_on_cell = self._get_cells_train(position[0], position[1])
+                train_on_cell = self.get_cells_train(position[0], position[1])
 
-                if train_on_cell == None:
+                if train_on_cell is None:
                     continue
 
                 if train_on_cell != train:

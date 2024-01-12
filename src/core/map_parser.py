@@ -24,7 +24,7 @@ class MapParser:
                 row.append(cell)
 
                 if cell_type in [CellType.SWITCH_LEFT, CellType.SWITCH_RIGHT]:
-                    cell.set_switch_state(SwitchState.UP)
+                    cell.switch_state = SwitchState.UP
 
             matrix.append(row)
 
