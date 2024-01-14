@@ -2,6 +2,8 @@ import pygame
 from pygame import Surface
 from core.data import Cell, CellType, Direction
 from model import Train, TrainStates, Model
+from tabulate import tabulate
+import os
 
 
 class View:
@@ -28,10 +30,15 @@ class View:
         self._print_info()
 
     def _print_info(self) -> None:
+        os.system("cls" if os.name == "nt" else "clear")
         i = 0
+
+        info: list[tuple[any, any]] = []
         for train, _ in self._model.train_positions.items():
-            print(f"Train {i} speed: {train.get_rounded_speed()}")
+            info.append((i, train.get_rounded_speed()))
             i += 1
+
+        print(tabulate(info, headers=["Train", "Speed"]))
 
     def _render_text(self, text: str, x: int, y: int) -> None:
         font = pygame.font.Font(None, 20)
