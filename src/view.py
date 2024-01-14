@@ -36,9 +36,9 @@ class View:
         """
         Display info in terminal live
         """
-        with Live(self._generate_info_table(), refresh_per_second=4) as live:
+        with Live(self._generate_info_table(), refresh_per_second=10) as live:
             while True:
-                time.sleep(0.2)
+                time.sleep(0.1)
                 live.update(self._generate_info_table())
 
     def _render_text(self, text: str, x: int, y: int) -> None:
@@ -126,7 +126,7 @@ class View:
 
         i = 0
         for train, _ in self._model.train_positions.items():
-            table.add_row(str(i), str(train.get_rounded_speed()))
+            table.add_row(str(i), str(round(train._speed, 2)))
             i += 1
 
         return table
