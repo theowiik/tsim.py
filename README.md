@@ -9,7 +9,7 @@ Train simulator that:
 - [x] uses MVC
   - [ ] simulation is not based on framerate, and can be run at any speed
 - [ ] is determenistic
-- [x] is modern (Python 3.6+)
+- [x] is modern (Python 3.12+)
 - [x] minimal dependencies
 - [ ] property based testing
 - [ ] easily editable rail network

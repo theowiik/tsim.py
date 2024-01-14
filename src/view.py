@@ -13,8 +13,8 @@ class View:
     _CELL_TRAIN_CRASH_COLOR: tuple[int, int, int] = (200, 20, 20)
     _CLEAR_COLOR: tuple[int, int, int] = (43, 42, 41)
 
-    def __init__(self, world: Model, screen: Surface):
-        self._world = world
+    def __init__(self, model: Model, screen: Surface):
+        self._model = model
         self._screen = screen
 
     def draw(self) -> None:
@@ -24,6 +24,14 @@ class View:
         self._screen.fill(self._CLEAR_COLOR)
         self._draw_matrix()
         pygame.display.update()
+
+        self._print_info()
+
+    def _print_info(self) -> None:
+        i = 0
+        for train, _ in self._model.train_positions.items():
+            print(f"Train {i} speed: {train.get_rounded_speed()}")
+            i += 1
 
     def _render_text(self, text: str, x: int, y: int) -> None:
         font = pygame.font.Font(None, 20)
@@ -46,13 +54,13 @@ class View:
         yoffset = self._CELL_MARGIN
         y_index = 0
 
-        for row in self._world._matrix:
+        for row in self._model._matrix:
             xoffset = self._CELL_MARGIN
             x_index = 0
 
             for cell in row:
                 color = self._CELL_NONE_COLOR
-                train: Train | None = self._world.get_cells_train(x_index, y_index)
+                train: Train | None = self._model.get_cells_train(x_index, y_index)
 
                 if train is not None:
                     if train.state == TrainStates.CRASHED:
