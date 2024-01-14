@@ -1,15 +1,14 @@
-import random
 import pygame
 import threading
-from model import World
+from model import Model
 from view import View
 
 
 class Controller:
-    _TPS: int = 60
-    _FPS: int = 30
+    _TPS: int = 10
+    _FPS: int = 60
 
-    def __init__(self, model: World, view: View):
+    def __init__(self, model: Model, view: View):
         self.model = model
         self.view = view
 
@@ -46,6 +45,4 @@ class Controller:
 
         while True:
             self.view.draw()
-            clock.tick(self._FPS * 1000)
-            rand = random.randint(0, 100)
-            print("Random number: " + str(rand))
+            clock.tick(self._FPS)  # TODO: unsure if this is correct

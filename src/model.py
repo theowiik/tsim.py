@@ -38,7 +38,7 @@ class Train:
         return int(self._speed)
 
 
-class World:
+class Model:
     _direction_utils = DirectionUtils()
     _matrix: List[List[Cell]] = MapParser.build_map()
     is_accelerating = False

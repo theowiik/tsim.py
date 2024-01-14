@@ -1,7 +1,7 @@
 import pygame
 from pygame import Surface
 from core.data import Cell, CellType, Direction
-from model import Train, TrainStates, World
+from model import Train, TrainStates, Model
 
 
 class View:
@@ -13,7 +13,7 @@ class View:
     _CELL_TRAIN_CRASH_COLOR: tuple[int, int, int] = (200, 20, 20)
     _CLEAR_COLOR: tuple[int, int, int] = (43, 42, 41)
 
-    def __init__(self, world: World, screen: Surface):
+    def __init__(self, world: Model, screen: Surface):
         self._world = world
         self._screen = screen
 
