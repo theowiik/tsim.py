@@ -1,9 +1,12 @@
+import threading
+import time
 import pygame
 from pygame import Surface
 from core.data import Cell, CellType, Direction
 from model import Train, TrainStates, Model
-from tabulate import tabulate
-import os
+from rich.console import Console
+from rich.table import Table
+from rich.live import Live
 
 
 class View:
@@ -18,6 +21,8 @@ class View:
     def __init__(self, model: Model, screen: Surface):
         self._model = model
         self._screen = screen
+        terminal_thread = threading.Thread(target=self._print_terminal)
+        terminal_thread.start()
 
     def draw(self) -> None:
         """
@@ -27,18 +32,14 @@ class View:
         self._draw_matrix()
         pygame.display.update()
 
-        self._print_info()
-
-    def _print_info(self) -> None:
-        os.system("cls" if os.name == "nt" else "clear")
-        i = 0
-
-        info: list[tuple[any, any]] = []
-        for train, _ in self._model.train_positions.items():
-            info.append((i, train.get_rounded_speed()))
-            i += 1
-
-        print(tabulate(info, headers=["Train", "Speed"]))
+    def _print_terminal(self) -> None:
+        """
+        Display info in terminal live
+        """
+        with Live(self._generate_info_table(), refresh_per_second=4) as live:
+            while True:
+                time.sleep(0.2)
+                live.update(self._generate_info_table())
 
     def _render_text(self, text: str, x: int, y: int) -> None:
         font = pygame.font.Font(None, 20)
@@ -116,3 +117,16 @@ class View:
                 ">" if Direction.RIGHT in cell._allowed_turns else "",
             ]
         )
+
+    def _generate_info_table(self) -> Table:
+        # print("generate_info_table")
+        table = Table(title="Info")
+        table.add_column("Train", justify="center", style="cyan")
+        table.add_column("Speed", justify="center", style="magenta")
+
+        i = 0
+        for train, _ in self._model.train_positions.items():
+            table.add_row(str(i), str(train.get_rounded_speed()))
+            i += 1
+
+        return table
