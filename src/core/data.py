@@ -70,21 +70,21 @@ class Cell:
 
 
 class DirectionUtils:
-    dir_to_coordinate: dict[Direction, tuple[int, int]] = {
+    DIR_TO_COORDINATE: dict[Direction, tuple[int, int]] = {
         Direction.UP: (0, -1),
         Direction.DOWN: (0, 1),
         Direction.LEFT: (-1, 0),
         Direction.RIGHT: (1, 0),
     }
 
-    coordinate_to_dir: dict[tuple[int, int], Direction] = {
+    COORDINATE_TO_DIR: dict[tuple[int, int], Direction] = {
         (0, -1): Direction.UP,
         (0, 1): Direction.DOWN,
         (-1, 0): Direction.LEFT,
         (1, 0): Direction.RIGHT,
     }
 
-    allowed_turns: dict[Direction, List[Direction]] = {
+    ALLOWED_TURNS: dict[Direction, List[Direction]] = {
         Direction.UP: [Direction.LEFT, Direction.RIGHT],
         Direction.DOWN: [Direction.LEFT, Direction.RIGHT],
         Direction.LEFT: [Direction.UP, Direction.DOWN],

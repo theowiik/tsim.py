@@ -92,16 +92,19 @@ class Model:
         head = positions[0]
         current_cell: Cell = self._matrix[head[1]][head[0]]
 
-        dirs_to_try: list[Direction] = [train.direction]
+        possible_dirs: list[Direction] = [
+            train.direction
+        ] + self._direction_utils.ALLOWED_TURNS[train.direction]
 
-        for direction in self._direction_utils.allowed_turns[train.direction]:
+        dirs_to_try: list[Direction] = []
+        for direction in possible_dirs:
             # Ensure it's a valid direction
             if direction in current_cell._allowed_turns:
                 dirs_to_try.append(direction)
 
         (next_x, next_y) = (None, None)
         for direction in dirs_to_try:
-            add_x, add_y = self._direction_utils.dir_to_coordinate[direction]
+            add_x, add_y = self._direction_utils.DIR_TO_COORDINATE[direction]
             new_test_x = head[0] + add_x
             new_test_y = head[1] + add_y
 
@@ -122,7 +125,7 @@ class Model:
             (old_x, old_y) = head
             ArrayUtils.push_first(self.train_positions[train], (next_x, next_y))
 
-            new_dir = self._direction_utils.coordinate_to_dir[
+            new_dir = self._direction_utils.COORDINATE_TO_DIR[
                 (next_x - old_x, next_y - old_y)
             ]
             train.direction = new_dir
