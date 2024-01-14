@@ -13,3 +13,10 @@ Train simulator that:
 - [x] minimal dependencies
 - [ ] property based testing
 - [ ] easily editable rail network
+
+## Install
+
+```bash
+pip install -r requirements.txt
+pre-commit install
+```
