@@ -17,13 +17,14 @@ class MapParser:
             row: list[Cell] = []
 
             for char in line.strip().replace("\n", ""):
-                cell_type: CellType = MapParser.parse_cell_type(char)
-                if cell_type is None:
+                cell: Cell = MapParser.parse_cell(char)
+
+                if cell is None:
                     raise ValueError("Cell cannot be None")
-                cell = Cell(cell_type)
+
                 row.append(cell)
 
-                if cell_type in [CellType.SWITCH_LEFT, CellType.SWITCH_RIGHT]:
+                if cell in [CellType.SWITCH_LEFT, CellType.SWITCH_RIGHT]:
                     cell.switch_state = SwitchState.UP
 
             matrix.append(row)
@@ -31,12 +32,18 @@ class MapParser:
         return matrix
 
     @staticmethod
-    def parse_cell_type(char: str) -> CellType:
+    def parse_cell(char: str) -> Cell or None:
         """
-        Parses a character to a CellType
+        Parses a character to a CellType.
         """
         for cell_type in CellType:
             if cell_type.value == char:
-                return cell_type
+                return Cell(cell_type)
+
+        try:
+            sensor_id = int(char)
+            return Cell(CellType.SENSOR, sensor_id)
+        except Exception:
+            pass
 
         raise ValueError(f"Invalid character {char} for CellType")

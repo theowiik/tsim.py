@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import List
+from uuid import uuid4
 
 
 class Direction(Enum):
@@ -10,10 +11,11 @@ class Direction(Enum):
 
 
 class CellType(Enum):
-    EMPTY = "."
+    EMPTY = "_"
     TRACK = "#"
     SWITCH_LEFT = "<"
     SWITCH_RIGHT = ">"
+    SENSOR = "SENSOR"
 
 
 class SwitchState(Enum):
@@ -37,18 +39,27 @@ class Cell:
     _allowed_turns: list[Direction] = []
     _switch_state: SwitchState = SwitchState.NONE
 
-    def __init__(self, cell_type: CellType):
+    def __init__(self, cell_type: CellType, id: str = None) -> None:
         self.cell_type = cell_type
 
-        if self.cell_type == CellType.TRACK:
+        if id is None:
+            self.id = str(uuid4())
+
+        self.id = id
+
+        if self.cell_type in [CellType.TRACK, CellType.SENSOR]:
             self._allowed_turns = [
                 Direction.UP,
                 Direction.DOWN,
                 Direction.LEFT,
                 Direction.RIGHT,
             ]
-        else:
+        elif self.cell_type in [CellType.SWITCH_LEFT, CellType.SWITCH_RIGHT]:
             self._allowed_turns = [Direction.UP]
+        elif self.cell_type == CellType.EMPTY:
+            self._allowed_turns = []
+        else:
+            raise ValueError(f"Invalid cell type {cell_type}")
 
     @property
     def switch_state(self) -> SwitchState:
