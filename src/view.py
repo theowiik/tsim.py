@@ -4,7 +4,6 @@ import pygame
 from pygame import Surface
 from core.data import Cell, CellType, Direction
 from model import Train, TrainStates, Model
-from rich.console import Console
 from rich.table import Table
 from rich.live import Live
 
@@ -123,10 +122,16 @@ class View:
         table = Table(title="Info")
         table.add_column("Train", justify="center", style="cyan")
         table.add_column("Speed", justify="center", style="magenta")
+        table.add_column("Max Speed", justify="center", style="green")
 
         i = 0
         for train, _ in self._model.train_positions.items():
-            table.add_row(str(i), str(round(train._speed, 2)))
+            speed = str(round(train._speed, 2))
+            max_speed = str(train._MAX_SPEED)
+            if train._speed >= train._MAX_SPEED:
+                max_speed += " max"
+
+            table.add_row(str(i), speed, max_speed)
             i += 1
 
         return table

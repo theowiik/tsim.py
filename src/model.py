@@ -14,10 +14,10 @@ class Train:
     state: TrainStates = TrainStates.OK
     is_accelerating: bool = False
     _speed: float = 0
-    _deacceleration: float = 0.1
-    _acceleration: float = 0.2
-    _max_speed: float = 400
-    _length: float = 5
+    _DEACCELERATION: float = 0.1
+    _ACCELERATION: float = 0.2
+    _MAX_SPEED: int = 5
+    _LENGTH: int = 5
 
     def __init__(
         self,
@@ -27,12 +27,12 @@ class Train:
 
     def accelerate_tick(self):
         if self.is_accelerating:
-            self._speed += self._acceleration
+            self._speed += self._ACCELERATION
         else:
-            self._speed -= self._deacceleration
+            self._speed -= self._DEACCELERATION
 
         # Clamp within [0, _max_speed]
-        self._speed = max(min(self._speed, self._max_speed), 0)
+        self._speed = max(min(self._speed, self._MAX_SPEED), 0)
 
     def get_rounded_speed(self):
         return int(self._speed)
@@ -46,7 +46,7 @@ class Model:
 
     def __init__(self):
         for train, positions in self.train_positions.items():
-            for _ in range(train._length - 1):
+            for _ in range(train._LENGTH - 1):
                 positions.append((positions[0][0], positions[0][1]))
 
     def tick(self):
