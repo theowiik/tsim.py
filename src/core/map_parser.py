@@ -32,9 +32,11 @@ class MapParser:
         return matrix
 
     @staticmethod
-    def parse_cell(char: str) -> Cell or None:
+    def parse_cell(char: str) -> Cell:
         """
-        Parses a character to a CellType.
+        Parses a character to a Cell.
+
+        Assumes that no whitespace characters are passed.
         """
         for cell_type in CellType:
             if cell_type.value == char:

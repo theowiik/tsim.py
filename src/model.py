@@ -117,6 +117,7 @@ class Model:
                 CellType.TRACK,
                 CellType.SWITCH_LEFT,
                 CellType.SWITCH_RIGHT,
+                CellType.SENSOR,
             ]:
                 (next_x, next_y) = (new_test_x, new_test_y)
                 break

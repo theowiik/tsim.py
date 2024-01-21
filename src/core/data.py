@@ -54,8 +54,10 @@ class Cell:
                 Direction.LEFT,
                 Direction.RIGHT,
             ]
-        elif self.cell_type in [CellType.SWITCH_LEFT, CellType.SWITCH_RIGHT]:
-            self._allowed_turns = [Direction.UP]
+        elif self.cell_type == CellType.SWITCH_LEFT:
+            self._allowed_turns = [Direction.UP, Direction.LEFT]
+        elif self.cell_type == CellType.SWITCH_RIGHT:
+            self._allowed_turns = [Direction.UP, Direction.RIGHT]
         elif self.cell_type == CellType.EMPTY:
             self._allowed_turns = []
         else:
