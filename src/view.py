@@ -6,6 +6,8 @@ from core.data import Cell, CellType, Direction
 from model import Train, TrainStates, Model
 from rich.table import Table
 from rich.live import Live
+from rich.layout import Layout
+import os
 
 
 class View:
@@ -22,6 +24,7 @@ class View:
         self._screen = screen
         terminal_thread = threading.Thread(target=self._print_terminal)
         terminal_thread.start()
+        self._clear_terminal()
 
     def draw(self) -> None:
         """
@@ -31,14 +34,21 @@ class View:
         self._draw_matrix()
         pygame.display.update()
 
+    def _clear_terminal(self) -> None:
+        os.system("cls" if os.name == "nt" else "clear")
+
     def _print_terminal(self) -> None:
         """
         Display info in terminal live
         """
-        with Live(self._generate_info_table(), refresh_per_second=10) as live:
+        layout = Layout()
+        layout.split_row(Layout(name="left"), Layout(name="right"))
+
+        with Live(layout, refresh_per_second=10):
             while True:
+                layout["left"].update(self._generate_train_info_table())
+                layout["right"].update(self._generate_world_info_table())
                 time.sleep(0.1)
-                live.update(self._generate_info_table())
 
     def _render_text(self, text: str, x: int, y: int) -> None:
         font = pygame.font.Font(None, 20)
@@ -117,9 +127,9 @@ class View:
             ]
         )
 
-    def _generate_info_table(self) -> Table:
+    def _generate_train_info_table(self) -> Table:
         # print("generate_info_table")
-        table = Table(title="Info")
+        table = Table(title="Train")
         table.add_column("Train", justify="center", style="cyan")
         table.add_column("Speed", justify="center", style="magenta")
         table.add_column("Max Speed", justify="center", style="green")
@@ -133,5 +143,14 @@ class View:
 
             table.add_row(str(i), speed, max_speed)
             i += 1
+
+        return table
+
+    def _generate_world_info_table(self) -> Table:
+        # print("generate_info_table")
+        table = Table(title="World")
+        table.add_column("Sensor X", justify="center", style="cyan")
+        table.add_column("State", justify="center", style="green")
+        table.add_row("1", "UP")
 
         return table
