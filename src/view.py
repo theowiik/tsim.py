@@ -11,9 +11,8 @@ import os
 
 
 class View:
-    _CELL_WIDTH: int = 20
-    _CELL_MARGIN: int = 2
     _CELL_NONE_COLOR: tuple[int, int, int] = (136, 75, 75)
+    _CELL_SENSOR_COLOR: tuple[int, int, int] = (75, 136, 75)
     _CELL_TRACK_COLOR: tuple[int, int, int] = (136, 136, 75)
     _CELL_TRAIN_COLORS: list[tuple[int, int, int]] = [(75, 75, 136), (66, 123, 123)]
     _CELL_TRAIN_CRASH_COLOR: tuple[int, int, int] = (200, 20, 20)
@@ -68,54 +67,44 @@ class View:
         return "?"
 
     def _draw_matrix(self) -> None:
-        yoffset = self._CELL_MARGIN
-        y_index = 0
+        cell_size = int(self._calculate_cell_size())
 
-        for row in self._model._matrix:
-            xoffset = self._CELL_MARGIN
-            x_index = 0
-
-            for cell in row:
-                color = self._CELL_NONE_COLOR
-                train: Train | None = self._model.get_cells_train(x_index, y_index)
-
-                if train is not None:
+        for y_index, row in enumerate(self._model._matrix):
+            for x_index, cell in enumerate(row):
+                # Color
+                if cell.cell_type == CellType.SENSOR:
+                    color = self._CELL_SENSOR_COLOR
+                elif self._model.get_cells_train(x_index, y_index):
+                    train = self._model.get_cells_train(x_index, y_index)
                     if train.state == TrainStates.CRASHED:
                         color = self._CELL_TRAIN_CRASH_COLOR
                     else:
                         color = self._CELL_TRAIN_COLORS[0]
-
                 elif cell.cell_type in [
                     CellType.TRACK,
                     CellType.SWITCH_LEFT,
                     CellType.SWITCH_RIGHT,
                 ]:
                     color = self._CELL_TRACK_COLOR
+                else:
+                    color = self._CELL_NONE_COLOR
 
+                # Draw the cell
                 pygame.draw.rect(
                     self._screen,
                     color,
                     pygame.Rect(
-                        xoffset,
-                        yoffset,
-                        self._CELL_WIDTH,
-                        self._CELL_WIDTH,
+                        x_index * cell_size,
+                        y_index * cell_size,
+                        cell_size,
+                        cell_size,
                     ),
                 )
 
-                # Draw allowed turns
-                if cell.cell_type in [
-                    CellType.SWITCH_LEFT,
-                    CellType.SWITCH_RIGHT,
-                ]:
+                # Draw allowed turns for switch cells
+                if cell.cell_type in [CellType.SWITCH_LEFT, CellType.SWITCH_RIGHT]:
                     mask = self._build_direction_mask(cell)
-                    self._render_text(mask, xoffset, yoffset)
-
-                x_index += 1
-                xoffset += self._CELL_WIDTH + self._CELL_MARGIN
-
-            y_index += 1
-            yoffset += self._CELL_WIDTH + self._CELL_MARGIN
+                    self._render_text(mask, x_index * cell_size, y_index * cell_size)
 
     def _build_direction_mask(self, cell: Cell) -> str:
         return "".join(
@@ -128,7 +117,6 @@ class View:
         )
 
     def _generate_train_info_table(self) -> Table:
-        # print("generate_info_table")
         table = Table(title="Train")
         table.add_column("Train", justify="center", style="cyan")
         table.add_column("Speed", justify="center", style="magenta")
@@ -147,10 +135,19 @@ class View:
         return table
 
     def _generate_world_info_table(self) -> Table:
-        # print("generate_info_table")
         table = Table(title="World")
         table.add_column("Sensor X", justify="center", style="cyan")
         table.add_column("State", justify="center", style="green")
         table.add_row("1", "UP")
 
         return table
+
+    def _calculate_cell_size(self) -> float:
+        window_width, window_height = pygame.display.get_surface().get_size()
+        rows = len(self._model._matrix)
+        cols = len(self._model._matrix[0])
+
+        max_cell_width = window_width / cols
+        max_cell_height = window_height / rows
+
+        return min(max_cell_width, max_cell_height)

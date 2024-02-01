@@ -6,7 +6,7 @@ from view import View
 
 def main() -> None:
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
     pygame.display.set_caption("train-sim 2.0")
 
     model = Model()

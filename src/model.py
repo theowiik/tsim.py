@@ -39,6 +39,7 @@ class Train:
 
 
 class Model:
+    _sensors: dict[int, Cell] = {}
     _direction_utils = DirectionUtils()
     _matrix: List[List[Cell]] = MapParser.build_map()
     is_accelerating = False
@@ -48,6 +49,8 @@ class Model:
         for train, positions in self.train_positions.items():
             for _ in range(train._LENGTH - 1):
                 positions.append((positions[0][0], positions[0][1]))
+
+        #
 
     def tick(self):
         """
@@ -65,6 +68,20 @@ class Model:
                     return train
 
         return None
+
+    def _get_cells_sensor(self, x, y) -> Cell | None:
+        """
+        Returns the cell at the specified coordinates, if it is a sensor.
+        If the cell is not a sensor, returns None.
+        """
+        try:
+            cell: Cell = self._matrix[y][x]
+            if cell.cell_type == CellType.SENSOR:
+                return cell
+            else:
+                return None
+        except IndexError:
+            return None
 
     def _move_train_tick(self, train: Train, positions: List[Tuple[int, int]]):
         for _ in range(train.get_rounded_speed()):
