@@ -39,7 +39,7 @@ class Train:
 
 
 class Model:
-    _sensors: dict[int, Cell] = {}
+    sensor_states: dict[Tuple[int, int], bool] = {}
     _direction_utils = DirectionUtils()
     _matrix: List[List[Cell]] = MapParser.build_map()
     is_accelerating = False
@@ -50,7 +50,11 @@ class Model:
             for _ in range(train._LENGTH - 1):
                 positions.append((positions[0][0], positions[0][1]))
 
-        #
+        # Find all sensors
+        for y, row in enumerate(self._matrix):
+            for x, cell in enumerate(row):
+                if cell.cell_type == CellType.SENSOR:
+                    self.sensor_states[(x, y)] = False
 
     def tick(self):
         """
@@ -87,9 +91,22 @@ class Model:
         for _ in range(train.get_rounded_speed()):
             self._move_train_one_cell(train, positions)
 
-        # TOOD: bad
-        train.is_accelerating = self.is_accelerating
+        train.is_accelerating = self.is_accelerating  # TODO: bad
         train.accelerate_tick()
+        self._update_sensor_states()
+
+    def _update_sensor_states(self):
+        # Reset all sensors
+        for position in self.sensor_states.keys():
+            self.sensor_states[position] = False
+
+        # Update sensors
+        for positions in self.train_positions.values():
+            for position in positions:
+                sensor = self._get_cells_sensor(position[0], position[1])
+
+                if sensor is not None:
+                    self.sensor_states[(position[0], position[1])] = True
 
     def _move_train_one_cell(
         self, train: Train, positions: List[Tuple[int, int]]

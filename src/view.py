@@ -3,7 +3,7 @@ import time
 import pygame
 from pygame import Surface
 from core.data import Cell, CellType, Direction
-from model import Train, TrainStates, Model
+from model import TrainStates, Model
 from rich.table import Table
 from rich.live import Live
 from rich.layout import Layout
@@ -13,6 +13,7 @@ import os
 class View:
     _CELL_NONE_COLOR: tuple[int, int, int] = (136, 75, 75)
     _CELL_SENSOR_COLOR: tuple[int, int, int] = (75, 136, 75)
+    _CELL_SENSOR_ACTIVE_COLOR: tuple[int, int, int] = (133, 0, 0)
     _CELL_TRACK_COLOR: tuple[int, int, int] = (136, 136, 75)
     _CELL_TRAIN_COLORS: list[tuple[int, int, int]] = [(75, 75, 136), (66, 123, 123)]
     _CELL_TRAIN_CRASH_COLOR: tuple[int, int, int] = (200, 20, 20)
@@ -74,6 +75,10 @@ class View:
                 # Color
                 if cell.cell_type == CellType.SENSOR:
                     color = self._CELL_SENSOR_COLOR
+
+                    if self._model.sensor_states[(x_index, y_index)]:
+                        color = self._CELL_SENSOR_ACTIVE_COLOR
+
                 elif self._model.get_cells_train(x_index, y_index):
                     train = self._model.get_cells_train(x_index, y_index)
                     if train.state == TrainStates.CRASHED:
@@ -136,7 +141,7 @@ class View:
 
     def _generate_world_info_table(self) -> Table:
         table = Table(title="World")
-        table.add_column("Sensor X", justify="center", style="cyan")
+        table.add_column("Sensor", justify="center", style="cyan")
         table.add_column("State", justify="center", style="green")
         table.add_row("1", "UP")
 
