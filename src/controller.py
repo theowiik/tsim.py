@@ -1,5 +1,7 @@
-import pygame
 import threading
+
+import pygame
+
 from model import Model
 from view import View
 

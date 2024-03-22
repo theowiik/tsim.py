@@ -1,13 +1,15 @@
+import os
 import threading
 import time
+
 import pygame
 from pygame import Surface
-from core.data import Cell, CellType, Direction
-from model import TrainStates, Model
-from rich.table import Table
-from rich.live import Live
 from rich.layout import Layout
-import os
+from rich.live import Live
+from rich.table import Table
+
+from core.data import Cell, CellType, Direction
+from model import Model, TrainStates
 
 
 class View:

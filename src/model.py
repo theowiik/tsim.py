@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import List, Tuple
+
 from core.data import Cell, CellType, Direction, DirectionUtils
 from core.map_parser import MapParser
 from core.util import ArrayUtils
