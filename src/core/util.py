@@ -28,3 +28,7 @@ class ArrayUtils:
             i -= 1
 
         a[0] = v
+
+
+def none_or_whitespace(s: str) -> bool:
+    return not s or not s.strip()

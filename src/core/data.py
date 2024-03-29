@@ -11,17 +11,17 @@ class Direction(Enum):
 
 
 class CellType(Enum):
-    EMPTY = "_"
-    TRACK = "#"
-    SWITCH_LEFT = "<"
-    SWITCH_RIGHT = ">"
-    SENSOR = "SENSOR"
+    EMPTY = 1
+    TRACK = 2
+    SWITCH_LEFT = 3
+    SWITCH_RIGHT = 4
+    SENSOR = 5
 
 
 class SwitchState(Enum):
-    UP = "UP"
-    DOWN = "DOWN"
-    NONE = "NONE"
+    UP = 1
+    DOWN = 2
+    NONE = 3
 
 
 class Cell:

@@ -1,7 +1,18 @@
+from typing import List, Tuple
+
 from core.data import Cell, CellType, SwitchState
+from core.util import none_or_whitespace
 
 
 class MapParser:
+    _COMMENT = "//"
+    _MAPPINGS: List[Tuple[CellType, List[str]]] = [
+        (CellType.EMPTY, ["░", " "]),
+        (CellType.TRACK, ["═", "║", "╔", "╚", "╗", "╝", "╬"]),
+        (CellType.SWITCH_LEFT, ["╣"]),
+        (CellType.SWITCH_RIGHT, ["╠"]),
+    ]
+
     @staticmethod
     def build_map() -> list[list[Cell]]:
         """
@@ -10,10 +21,16 @@ class MapParser:
         Returns:
             A 2D list of Cell objects representing the map.
         """
-        f = open("data/map.map", "r")
+        f = open("data/map.map", "r", encoding="utf-8")
         matrix: list[list[CellType]] = []
 
         for line in f:
+            if none_or_whitespace(line):
+                continue
+
+            if line.strip().startswith(MapParser._COMMENT):
+                continue
+
             row: list[Cell] = []
 
             for char in line.strip().replace("\n", ""):
@@ -29,6 +46,9 @@ class MapParser:
 
             matrix.append(row)
 
+        if len(matrix) == 0:
+            raise ValueError("Empty map! Please configure the map.")
+
         return matrix
 
     @staticmethod
@@ -38,9 +58,19 @@ class MapParser:
 
         Assumes that no whitespace characters are passed.
         """
-        for cell_type in CellType:
-            if cell_type.value == char:
-                return Cell(cell_type)
+
+        match = next(
+            (cell_type for cell_type, chars in MapParser._MAPPINGS if char in chars),
+            None,
+        )
+
+        if match is not None:
+            return Cell(match)
+
+        # for (cell_type, chars) in MapParser._MAPPINGS:
+        #     for c in chars:
+        #         if c == char:
+        #             return cell_type
 
         try:
             sensor_id = int(char)
