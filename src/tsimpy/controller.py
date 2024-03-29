@@ -2,8 +2,8 @@ import threading
 
 import pygame
 
-from model import Model
-from view import View
+from tsimpy.model import Model
+from tsimpy.view import View
 
 
 class Controller:

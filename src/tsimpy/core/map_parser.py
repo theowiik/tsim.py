@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
-from core.data import Cell, CellType, SwitchState
-from core.util import none_or_whitespace
+from tsimpy.core.data import Cell, CellType, SwitchState
+from tsimpy.core.util import none_or_whitespace
 
 
 class MapParser:

@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import List, Tuple
 
-from core.data import Cell, CellType, Direction, DirectionUtils
-from core.map_parser import MapParser
-from core.util import ArrayUtils
+from tsimpy.core.data import Cell, CellType, Direction, DirectionUtils
+from tsimpy.core.map_parser import MapParser
+from tsimpy.core.util import ArrayUtils
 
 
 class TrainStates(Enum):

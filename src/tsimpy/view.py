@@ -8,8 +8,8 @@ from rich.layout import Layout
 from rich.live import Live
 from rich.table import Table
 
-from core.data import Cell, CellType, Direction
-from model import Model, TrainStates
+from tsimpy.core.data import Cell, CellType, Direction
+from tsimpy.model import Model, TrainStates
 
 
 class View:
@@ -32,6 +32,7 @@ class View:
         """
         Main draw function
         """
+
         self._screen.fill(self._CLEAR_COLOR)
         self._draw_matrix()
         pygame.display.update()
@@ -145,7 +146,9 @@ class View:
         table = Table(title="World")
         table.add_column("Sensor", justify="center", style="cyan")
         table.add_column("State", justify="center", style="green")
-        table.add_row("1", "UP")
+
+        for sensor, state in self._model.sensor_states.items():
+            table.add_row(str(sensor), "ON" if state else "OFF")
 
         return table
 

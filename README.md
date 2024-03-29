@@ -1,4 +1,4 @@
-# train-sim 🚂 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2ca50f04f6314d29b8271f5cbdbf4207)](https://app.codacy.com/gh/theowiik/train-sim/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+# TSimPy (tsim.py) 🚂 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2ca50f04f6314d29b8271f5cbdbf4207)](https://app.codacy.com/gh/theowiik/train-sim/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 Simple train simulator
 
